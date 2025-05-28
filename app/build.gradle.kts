@@ -65,10 +65,10 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer.rtsp)
     implementation(libs.androidx.media3.ui)
 
-    //db
+    /*//db
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.ktx)*/
 
     //di
     implementation(libs.hilt.android)
@@ -76,7 +76,6 @@ dependencies {
 
     //subs
     implementation(project(":domain"))
-    implementation(project(":data"))
     implementation(project(":network"))
 }
 
