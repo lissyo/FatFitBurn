@@ -5,7 +5,7 @@ import ru.ilessy.domain.repository.NetworkRepository
 
 class GetVideoUseCase(private val networkRepository: NetworkRepository) {
 
-    operator fun invoke(id: Long): VideoWorkout {
+    suspend operator fun invoke(id: Long): VideoWorkout {
         return networkRepository.loadVideoFromId(id = id)
     }
 

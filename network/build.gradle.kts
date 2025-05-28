@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -40,4 +42,18 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    //di
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+
+    //network
+    implementation(libs.okhttp)
+
+    //subs
+    implementation(project(":domain"))
+}
+
+kapt {
+    correctErrorTypes = true
 }

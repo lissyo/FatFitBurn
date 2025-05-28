@@ -5,7 +5,7 @@ import ru.ilessy.domain.repository.NetworkRepository
 
 class GetWorkoutsUseCase(private val networkRepository: NetworkRepository) {
 
-    operator fun invoke(): List<Workout> {
+    suspend operator fun invoke(): List<Workout> {
         return networkRepository.loadWorkouts()
     }
 

@@ -1,4 +1,4 @@
-package ru.ilessy.fatfitbutn.fragments
+package ru.ilessy.fatfitbutn.fragments.workout
 
 import android.os.Bundle
 import android.view.LayoutInflater

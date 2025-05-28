@@ -4,6 +4,6 @@ import ru.ilessy.domain.models.VideoWorkout
 import ru.ilessy.domain.models.Workout
 
 interface NetworkRepository {
-    fun loadWorkouts(): List<Workout>
-    fun loadVideoFromId(id: Long): VideoWorkout
+    suspend fun loadWorkouts(): List<Workout>
+    suspend fun loadVideoFromId(id: Long): VideoWorkout
 }

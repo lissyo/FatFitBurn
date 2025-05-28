@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import ru.ilessy.fatfitbutn.R
 import ru.ilessy.fatfitbutn.databinding.ActivityMainBinding
-import ru.ilessy.fatfitbutn.fragments.WorkoutFragment
+import ru.ilessy.fatfitbutn.fragments.workout.WorkoutFragment
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
