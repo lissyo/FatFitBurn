@@ -20,11 +20,11 @@ object NetworkModule {
 
     @Provides
     @WorkoutEndpoint
-    fun provideWorkoutEndpoint(): String = "ref.test.kolsa.ru/get_workouts"
+    fun provideWorkoutEndpoint(): String = "https://ref.test.kolsa.ru/get_workouts"
 
     @Provides
     @VideoWorkoutEndPoint
-    fun provideVideoWorkoutEndpoint(): String = "ref.test.kolsa.ru/get_video"
+    fun provideVideoWorkoutEndpoint(): String = "https://ref.test.kolsa.ru/get_video"
 
     @Provides
     @Singleton
