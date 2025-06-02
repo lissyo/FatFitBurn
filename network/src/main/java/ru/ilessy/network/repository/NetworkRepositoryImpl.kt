@@ -1,11 +1,14 @@
 package ru.ilessy.network.repository
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.Response
+import ru.ilessy.domain.enums.WorkoutType
 import ru.ilessy.domain.models.VideoWorkout
 import ru.ilessy.domain.models.Workout
 import ru.ilessy.domain.repository.NetworkRepository
@@ -69,10 +72,30 @@ class NetworkRepositoryImpl @Inject constructor(
     }
 
     private fun parseWorkouts(json: String?): List<Workout> {
-        TODO("Реализовать парсинг JSON в List<Workout>")
+        val gson = Gson()
+        val listType = object : TypeToken<List<WorkoutJson>>() {}.type
+        val workoutsJson = gson.fromJson<List<WorkoutJson>>(json, listType)
+
+        return workoutsJson.map { jsonItem ->
+            Workout(
+                id = jsonItem.id,
+                title = jsonItem.title,
+                description = jsonItem.description,
+                workoutType = WorkoutType.fromInt(jsonItem.type),
+                duration = jsonItem.duration
+            )
+        }
     }
 
     private fun parseVideoWorkout(json: String?): VideoWorkout {
         TODO("Реализовать парсинг JSON в VideoWorkout")
     }
+
+    private data class WorkoutJson(
+        val id: Long,
+        val title: String,
+        val description: String?,
+        val type: Int,
+        val duration: String
+    )
 }

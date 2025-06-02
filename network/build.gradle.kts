@@ -49,6 +49,7 @@ dependencies {
 
     //network
     implementation(libs.okhttp)
+    implementation(libs.gson)
 
     //subs
     implementation(project(":domain"))
