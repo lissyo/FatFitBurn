@@ -1,4 +1,4 @@
-package ru.ilessy.fatfitbutn.fragments.workout
+package ru.ilessy.fatfitbutn.activities
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,7 +14,7 @@ import ru.ilessy.domain.usecases.GetWorkoutsUseCase
 import javax.inject.Inject
 
 @HiltViewModel
-class WorkoutViewModel @Inject constructor(
+class MainViewModel @Inject constructor(
     private val getWorkoutsUseCase: GetWorkoutsUseCase,
     private val getVideoUseCase: GetVideoUseCase
 ) :
