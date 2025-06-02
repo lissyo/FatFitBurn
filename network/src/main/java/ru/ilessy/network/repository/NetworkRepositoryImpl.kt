@@ -2,7 +2,6 @@ package ru.ilessy.network.repository
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
@@ -12,12 +11,13 @@ import ru.ilessy.domain.enums.WorkoutType
 import ru.ilessy.domain.models.VideoWorkout
 import ru.ilessy.domain.models.Workout
 import ru.ilessy.domain.repository.NetworkRepository
+import ru.ilessy.domain.repository.ApiResult
 import ru.ilessy.network.ApiClient
 import ru.ilessy.network.di.VideoWorkoutEndPoint
 import ru.ilessy.network.di.WorkoutEndpoint
 import java.io.IOException
 import javax.inject.Inject
-import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.Continuation
 
 class NetworkRepositoryImpl @Inject constructor(
     private val apiClient: ApiClient,
@@ -25,50 +25,12 @@ class NetworkRepositoryImpl @Inject constructor(
     @VideoWorkoutEndPoint private val videoWorkoutEndPoint: String
 ) : NetworkRepository {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun loadWorkouts(): List<Workout> {
-        return suspendCancellableCoroutine { continuation ->
-            apiClient.invoke(
-                Request.Builder().url(workoutEndpoint).build(),
-                object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        continuation.resumeWithException(e)
-                    }
-
-                    override fun onResponse(call: Call, response: Response) {
-                        if (response.isSuccessful) {
-                            val workouts = parseWorkouts(response.body?.string())
-                            continuation.resume(workouts) {}
-                        } else {
-                            continuation.resumeWithException(IOException("HTTP ${response.code}"))
-                        }
-                    }
-                }
-            )
-        }
+    override suspend fun loadWorkouts(): ApiResult<List<Workout>> {
+        return makeApiRequest(workoutEndpoint) { parseWorkouts(it) }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun loadVideoFromId(id: Long): VideoWorkout {
-        return suspendCancellableCoroutine { continuation ->
-            apiClient.invoke(
-                Request.Builder().url("$videoWorkoutEndPoint/$id").build(),
-                object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        continuation.resumeWithException(e)
-                    }
-
-                    override fun onResponse(call: Call, response: Response) {
-                        if (response.isSuccessful) {
-                            val videoWorkout = parseVideoWorkout(response.body?.string())
-                            continuation.resume(videoWorkout) {}
-                        } else {
-                            continuation.resumeWithException(IOException("HTTP ${response.code}"))
-                        }
-                    }
-                }
-            )
-        }
+    override suspend fun loadVideoFromId(id: Long): ApiResult<VideoWorkout> {
+        return makeApiRequest("$videoWorkoutEndPoint?id=$id") { parseVideoWorkout(it) }
     }
 
     private fun parseWorkouts(json: String?): List<Workout> {
@@ -88,7 +50,9 @@ class NetworkRepositoryImpl @Inject constructor(
     }
 
     private fun parseVideoWorkout(json: String?): VideoWorkout {
-        TODO("Реализовать парсинг JSON в VideoWorkout")
+        val gson = Gson()
+        val videoType = object : TypeToken<VideoWorkout>() {}.type
+        return gson.fromJson(json, videoType)
     }
 
     private data class WorkoutJson(
@@ -98,4 +62,57 @@ class NetworkRepositoryImpl @Inject constructor(
         val type: Int,
         val duration: String
     )
+
+    private suspend inline fun <reified T> makeApiRequest(
+        url: String,
+        crossinline parser: (String) -> T
+    ): ApiResult<T> {
+        return suspendCancellableCoroutine { continuation ->
+            val call = apiClient.invoke(
+                Request.Builder().url(url).build(),
+                object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        continuation.completeWithError(e)
+                    }
+
+                    override fun onResponse(call: Call, response: Response) {
+                        response.handleResponse(continuation, parser)
+                    }
+                }
+            )
+
+            continuation.invokeOnCancellation {
+                if (!call.isCanceled()) {
+                    call.cancel()
+                }
+            }
+        }
+    }
+
+    private fun <T> Continuation<ApiResult<T>>.completeWithError(throwable: Throwable) {
+        resumeWith(Result.success(ApiResult.Error(throwable)))
+    }
+
+    private inline fun <reified T> Response.handleResponse(
+        continuation: Continuation<ApiResult<T>>,
+        crossinline parser: (String) -> T
+    ) {
+        try {
+            if (!isSuccessful) {
+                continuation.completeWithError(IOException("HTTP $code"))
+                return
+            }
+
+            val body = body?.string()
+            if (body == null) {
+                continuation.completeWithError(IOException("Empty response body"))
+                return
+            }
+
+            val result = parser(body)
+            continuation.resumeWith(Result.success(ApiResult.Success(result)))
+        } catch (e: Exception) {
+            continuation.completeWithError(e)
+        }
+    }
 }

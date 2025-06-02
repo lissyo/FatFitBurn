@@ -6,10 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ru.ilessy.fatfitbutn.databinding.WorkoutFragmentBinding
 import ru.ilessy.fatfitbutn.fragments.workout.adapters.WorkoutAdapter
+import ru.ilessy.fatfitbutn.fragments.workout.adapters.WorkoutState
 
 @AndroidEntryPoint
 class WorkoutFragment : Fragment() {
@@ -31,16 +34,36 @@ class WorkoutFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeWorkoutsLiveData()
+        observeVideoLiveData()
         binding.workoutsRv.layoutManager = LinearLayoutManager(activity)
-        workoutViewModel.setIntent(WorkoutIntent.GetWorkouts)
+        workoutViewModel.setIntent(workoutIntent = WorkoutIntent.GetWorkouts)
     }
 
     private fun observeWorkoutsLiveData() {
         workoutViewModel.workoutsLiveData.observe(viewLifecycleOwner) { workoutsList ->
             if (workoutsList != null) {
                 val workoutAdapter = WorkoutAdapter(workoutsList)
+                lifecycleScope.launch {
+                    workoutAdapter.workoutState.collect { workoutState ->
+                        when (workoutState) {
+                            is WorkoutState.OpenWorkout -> {
+                                workoutViewModel.setIntent(
+                                    workoutIntent = WorkoutIntent.GetVideoWorkout(
+                                        workoutId = workoutState.workoutId
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
                 binding.workoutsRv.adapter = workoutAdapter
             }
+        }
+    }
+
+    private fun observeVideoLiveData() {
+        workoutViewModel.videoLiveData.observe(viewLifecycleOwner) { videoWorkout ->
+
         }
     }
 

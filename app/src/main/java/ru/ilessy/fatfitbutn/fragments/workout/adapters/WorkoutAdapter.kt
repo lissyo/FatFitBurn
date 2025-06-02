@@ -5,11 +5,19 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import ru.ilessy.domain.models.Workout
 import ru.ilessy.fatfitbutn.databinding.WorkoutHolderViewBinding
 
 class WorkoutAdapter(private val workoutsList: List<Workout>) :
     RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder>() {
+
+    private val _workoutState: MutableSharedFlow<WorkoutState> = MutableSharedFlow<WorkoutState>()
+    val workoutState: SharedFlow<WorkoutState> = _workoutState
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
         val binding =
@@ -28,6 +36,14 @@ class WorkoutAdapter(private val workoutsList: List<Workout>) :
     inner class WorkoutViewHolder(private val workoutView: WorkoutHolderViewBinding) :
         RecyclerView.ViewHolder(workoutView.root) {
 
+        init {
+            workoutView.root.setOnClickListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    _workoutState.emit(WorkoutState.OpenWorkout(workoutId = workoutsList[absoluteAdapterPosition].id))
+                }
+            }
+        }
+
         fun bind(workout: Workout) {
             workoutView.workoutTitle.text = workout.title
             workout.description?.let { description ->
@@ -45,4 +61,8 @@ class WorkoutAdapter(private val workoutsList: List<Workout>) :
 
     }
 
+}
+
+sealed interface WorkoutState {
+    data class OpenWorkout(val workoutId: Long) : WorkoutState
 }
