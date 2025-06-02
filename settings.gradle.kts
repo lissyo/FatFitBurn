@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "FatFitBurn"
 include(":app")
- 
+include(":data")
+include(":domain")
+include(":network")
