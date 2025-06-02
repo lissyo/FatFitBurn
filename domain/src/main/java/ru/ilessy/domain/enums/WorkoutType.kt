@@ -6,6 +6,26 @@ enum class WorkoutType(private val typeWorkout: Int) {
     ONLINE(2),
     ONLINE_WORKOUT(3);
 
+    override fun toString(): String {
+        return when (typeWorkout) {
+            1 -> {
+                "WORKOUT"
+            }
+
+            2 -> {
+                "ONLINE"
+            }
+
+            3 -> {
+                "ONLINE_WORKOUT"
+            }
+
+            else -> {
+                "UNDEFINED"
+            }
+        }
+    }
+
     companion object {
         fun fromInt(typeWorkout: Int): WorkoutType {
             return entries.find { it.typeWorkout == typeWorkout } ?: UNDEFINED
