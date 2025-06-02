@@ -80,7 +80,7 @@ class NetworkRepositoryImpl @Inject constructor(
             Workout(
                 id = jsonItem.id,
                 title = jsonItem.title,
-                description = jsonItem.description,
+                description = jsonItem.description ?: "",
                 workoutType = WorkoutType.fromInt(jsonItem.type),
                 duration = jsonItem.duration
             )

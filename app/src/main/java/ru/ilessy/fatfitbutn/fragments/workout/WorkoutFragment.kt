@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import ru.ilessy.fatfitbutn.databinding.WorkoutFragmentBinding
+import ru.ilessy.fatfitbutn.fragments.workout.adapters.WorkoutAdapter
 
 @AndroidEntryPoint
 class WorkoutFragment : Fragment() {
@@ -28,8 +30,18 @@ class WorkoutFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observeWorkoutsLiveData()
+        binding.workoutsRv.layoutManager = LinearLayoutManager(activity)
         workoutViewModel.setIntent(WorkoutIntent.GetWorkouts)
+    }
 
+    private fun observeWorkoutsLiveData() {
+        workoutViewModel.workoutsLiveData.observe(viewLifecycleOwner) { workoutsList ->
+            if (workoutsList != null) {
+                val workoutAdapter = WorkoutAdapter(workoutsList)
+                binding.workoutsRv.adapter = workoutAdapter
+            }
+        }
     }
 
     override fun onDestroyView() {
