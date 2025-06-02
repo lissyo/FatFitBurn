@@ -1,4 +1,4 @@
-package ru.ilessy.iptv.fragments.player.exo
+package ru.ilessy.fatfitbutn.fragments.video.core
 
 import android.content.Context
 import androidx.media3.common.PlaybackException
@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import ru.ilessy.domain.player.Media
 import ru.ilessy.domain.player.Player
-import ru.ilessy.fatfitbutn.fragments.video.core.ExoMedia
 
 class ExoMediaPlayer(private val context: Context) : Player() {
 

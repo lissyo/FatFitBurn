@@ -239,15 +239,6 @@ class CustomPlayerControls @JvmOverloads constructor(
         }
     }
 
-    fun restorePlayerTrackSelection(playerSelection: DefaultTrackSelector.Parameters? = null) {
-        playerSelection?.let {
-            player?.let { player ->
-                val trackSelector = player.trackSelector as? DefaultTrackSelector ?: return
-                trackSelector.parameters = playerSelection
-            }
-        }
-    }
-
     private fun sentEventControls(hasFocus: Boolean, viewId: Int, eventControls: EventControls) {
         if (hasFocus) {
             eventJob?.cancel()
@@ -255,11 +246,6 @@ class CustomPlayerControls @JvmOverloads constructor(
                 _eventControls.emit(eventControls)
             }
         }
-    }
-
-    private fun visiblePlayButton() {
-        binding.exoPause.visibility = VISIBLE
-        binding.exoPlay.visibility = GONE
     }
 
     fun setWorkoutData(workout: Workout) {
