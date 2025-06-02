@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
+    android:padding="10dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
@@ -11,6 +12,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/workout_description"
+        android:textSize="20sp"
+        android:textStyle="normal"
         android:layout_width="0dp"
         android:textColor="@color/black"
         android:layout_height="wrap_content"/>
@@ -19,6 +22,8 @@
         android:id="@+id/workout_description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/workout_title"
+        android:textStyle="normal"
+        android:textSize="11sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/workout_duration"
         android:layout_width="0dp"
