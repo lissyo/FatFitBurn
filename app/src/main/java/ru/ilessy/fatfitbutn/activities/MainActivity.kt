@@ -35,14 +35,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("CommitTransaction")
     private fun observeVideoLiveData() {
         mainViewModel.videoLiveData.observe(this) { videoWorkout ->
-            if (supportFragmentManager.findFragmentById(R.id.fragment_container) !is VideoWorkoutFragment) {
-                val videoWorkoutFragment = VideoWorkoutFragment()
-                supportFragmentManager.beginTransaction().replace(
-                    R.id.fragment_container,
-                    videoWorkoutFragment
-                ).addToBackStack(null).commit()
+            videoWorkout?.let {
+                if (supportFragmentManager.findFragmentById(R.id.fragment_container) !is VideoWorkoutFragment) {
+                    val videoWorkoutFragment = VideoWorkoutFragment()
+                    supportFragmentManager.beginTransaction().replace(
+                        R.id.fragment_container,
+                        videoWorkoutFragment
+                    ).addToBackStack(null).commit()
+                }
+            } ?: run {
+                //TODO добавить обработку
             }
         }
     }
