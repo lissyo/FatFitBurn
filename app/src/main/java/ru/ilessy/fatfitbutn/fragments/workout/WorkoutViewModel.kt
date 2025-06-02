@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.ilessy.domain.models.VideoWorkout
 import ru.ilessy.domain.models.Workout
+import ru.ilessy.domain.repository.ApiResult
 import ru.ilessy.domain.usecases.GetVideoUseCase
 import ru.ilessy.domain.usecases.GetWorkoutsUseCase
 import javax.inject.Inject
@@ -29,13 +30,31 @@ class WorkoutViewModel @Inject constructor(
         when (workoutIntent) {
             is WorkoutIntent.GetWorkouts -> {
                 viewModelScope.launch {
-                    _workoutsLiveData.value = getWorkoutsUseCase.invoke()
+                    when (val workoutResult = getWorkoutsUseCase.invoke()) {
+                        is ApiResult.Error -> {
+
+                        }
+
+                        is ApiResult.Success<*> -> {
+                            _workoutsLiveData.value = workoutResult.data as List<Workout>
+                        }
+                    }
+
                 }
             }
 
             is WorkoutIntent.GetVideoWorkout -> {
                 viewModelScope.launch {
-                    _videoLiveData.value = getVideoUseCase.invoke(id = workoutIntent.workoutId)
+                    when (val videoResult = getVideoUseCase.invoke(id = workoutIntent.workoutId)) {
+                        is ApiResult.Error -> {
+
+                        }
+
+                        is ApiResult.Success<*> -> {
+                            _videoLiveData.value = videoResult.data as VideoWorkout
+                        }
+                    }
+
                 }
             }
         }

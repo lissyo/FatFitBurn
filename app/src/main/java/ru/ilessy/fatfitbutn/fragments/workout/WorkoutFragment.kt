@@ -34,6 +34,7 @@ class WorkoutFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeWorkoutsLiveData()
+        observeVideoLiveData()
         binding.workoutsRv.layoutManager = LinearLayoutManager(activity)
         workoutViewModel.setIntent(workoutIntent = WorkoutIntent.GetWorkouts)
     }
@@ -57,6 +58,12 @@ class WorkoutFragment : Fragment() {
                 }
                 binding.workoutsRv.adapter = workoutAdapter
             }
+        }
+    }
+
+    private fun observeVideoLiveData() {
+        workoutViewModel.videoLiveData.observe(viewLifecycleOwner) { videoWorkout ->
+
         }
     }
 
