@@ -65,7 +65,7 @@ class VideoWorkoutFragment : Fragment() {
         mainViewModel.videoLiveData.observe(viewLifecycleOwner) { videoWorkout ->
             context?.let { context ->
                 exoMediaPlayer?.media = ExoMedia(
-                    mediaUri = videoWorkout.link,
+                    mediaUri = "https://ref.test.kolsa.ru/${videoWorkout.link}",
                     context = context
                 )
                 playPlayer()

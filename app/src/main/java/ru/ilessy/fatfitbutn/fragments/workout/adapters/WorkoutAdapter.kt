@@ -56,6 +56,7 @@ class WorkoutAdapter(private val workoutsList: List<Workout>) :
             } ?: run {
                 workoutView.workoutDescription.visibility = GONE
             }
+            workoutView.workoutType.text = workout.workoutType.toString()
             workoutView.workoutDuration.text = workout.duration
         }
 
