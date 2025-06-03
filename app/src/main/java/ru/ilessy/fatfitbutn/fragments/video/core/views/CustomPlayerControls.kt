@@ -50,15 +50,7 @@ class CustomPlayerControls @JvmOverloads constructor(
     private var updateJob: Job? = null
     private var eventJob: Job? = null
 
-    private val _controlEnum = MutableLiveData<ControlEnum>()
-    val controlEnum: LiveData<ControlEnum> = _controlEnum
-
-    private val _eventControls: MutableSharedFlow<EventControls> =
-        MutableSharedFlow()
-    val eventControls: SharedFlow<EventControls> = _eventControls
-
-    private val _playbackParameters = MutableLiveData<DefaultTrackSelector.Parameters?>()
-    val playbackParameters: LiveData<DefaultTrackSelector.Parameters?> = _playbackParameters
+    private var playbackSpeed = 1.0f
 
     init {
         _binding = CustomPlayerControlsBinding.inflate(LayoutInflater.from(context), this, true)
@@ -100,79 +92,37 @@ class CustomPlayerControls @JvmOverloads constructor(
             override fun onScrubStart(timeBar: TimeBar, position: Long) {}
 
             override fun onScrubMove(timeBar: TimeBar, position: Long) {
-                sentEventControls(
-                    hasFocus = true,
-                    viewId = binding.exoProgress.id,
-                    eventControls = EventControls.ClickEvent
-                )
                 player?.seekTo(position)
             }
 
             override fun onScrubStop(timeBar: TimeBar, position: Long, canceled: Boolean) {
-                sentEventControls(
-                    hasFocus = true,
-                    viewId = binding.exoProgress.id,
-                    eventControls = EventControls.ClickEvent
-                )
                 player?.seekTo(position)
             }
         })
-        binding.exoProgress.setOnFocusChangeListener { v, hasFocus ->
-            sentEventControls(
-                hasFocus = hasFocus,
-                viewId = v.id,
-                eventControls = EventControls.ClickEvent
-            )
-        }
 
         binding.exoPlay.setOnClickListener {
-            sentEventControls(
-                hasFocus = true,
-                viewId = binding.exoProgress.id,
-                eventControls = EventControls.ClickEvent
-            )
-            _controlEnum.value = ControlEnum.PLAY
             player?.play()
             binding.exoPlay.visibility = GONE
             binding.exoPause.visibility = VISIBLE
             binding.exoPause.requestFocus()
         }
 
-        binding.exoPlay.setOnFocusChangeListener { v, hasFocus ->
-            sentEventControls(
-                hasFocus = hasFocus,
-                viewId = v.id,
-                eventControls = EventControls.ClickEvent
-            )
-        }
-
         binding.exoPause.setOnClickListener {
-            sentEventControls(
-                hasFocus = true,
-                viewId = binding.exoProgress.id,
-                eventControls = EventControls.ClickEvent
-            )
-            _controlEnum.value = ControlEnum.PAUSE
             player?.pause()
             binding.exoPause.visibility = GONE
             binding.exoPlay.visibility = VISIBLE
             binding.exoPlay.requestFocus()
         }
 
-        binding.exoPause.setOnFocusChangeListener { v, hasFocus ->
-            sentEventControls(
-                hasFocus = hasFocus,
-                viewId = v.id,
-                eventControls = EventControls.ClickEvent
-            )
+        binding.workoutSpeedBtn.setOnClickListener {
+            playbackSpeed += 0.25f
+            if (playbackSpeed > 2.0f) {
+                playbackSpeed = 0.25f
+            }
+            player?.setPlaybackSpeed(playbackSpeed)
         }
 
         binding.workoutQualityBtn.setOnClickListener {
-            sentEventControls(
-                hasFocus = true,
-                viewId = binding.workoutQualityBtn.id,
-                eventControls = EventControls.ClickEvent
-            )
             showSelectionDialog(type = C.TRACK_TYPE_VIDEO, title = "Select Quality")
         }
     }
@@ -235,16 +185,6 @@ class CustomPlayerControls @JvmOverloads constructor(
                 parameters.addOverride(override)
             }
             trackSelector.parameters = parameters.build()
-            _playbackParameters.value = trackSelector.parameters
-        }
-    }
-
-    private fun sentEventControls(hasFocus: Boolean, viewId: Int, eventControls: EventControls) {
-        if (hasFocus) {
-            eventJob?.cancel()
-            eventJob = CoroutineScope(Dispatchers.Main).launch {
-                _eventControls.emit(eventControls)
-            }
         }
     }
 
@@ -271,8 +211,4 @@ class CustomPlayerControls @JvmOverloads constructor(
         eventJob?.cancel()
         _binding = null
     }
-}
-
-sealed class EventControls {
-    data object ClickEvent : EventControls()
 }

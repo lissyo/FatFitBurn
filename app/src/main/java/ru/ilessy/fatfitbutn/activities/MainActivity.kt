@@ -24,6 +24,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(ActivityMainBinding.inflate(layoutInflater).root)
         openWorkoutFragment()
         observeVideoLiveData()
+        if (isVideoWorkoutFragment()) {
+            goToImmersiveMode()
+        }
     }
 
 
@@ -42,8 +45,9 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("CommitTransaction")
     private fun observeVideoLiveData() {
         mainViewModel.videoLiveData.observe(this) { videoWorkout ->
-            videoWorkout?.let {
-                if (supportFragmentManager.findFragmentById(R.id.fragment_container) !is VideoWorkoutFragment) {
+            if (mainViewModel.isValidVideoWorkout(videoWorkout = videoWorkout)) {
+                mainViewModel.updateVideoWorkout(videoWorkout = videoWorkout)
+                if (!isVideoWorkoutFragment()) {
                     val videoWorkoutFragment = VideoWorkoutFragment()
                     supportFragmentManager.beginTransaction().replace(
                         R.id.fragment_container,
@@ -52,16 +56,18 @@ class MainActivity : AppCompatActivity() {
                         goToImmersiveMode()
                     }
                 }
-            } ?: run {
-                //TODO добавить обработку
             }
         }
+    }
+
+    private fun isVideoWorkoutFragment(): Boolean {
+        return supportFragmentManager.findFragmentById(R.id.fragment_container) is VideoWorkoutFragment
     }
 
     @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun onBackPressed() {
-        if (supportFragmentManager.findFragmentById(R.id.fragment_container) is VideoWorkoutFragment) {
+        if (isVideoWorkoutFragment()) {
             exitImmersiveMode()
         }
         super.onBackPressed()
