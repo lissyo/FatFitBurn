@@ -68,6 +68,8 @@ class VideoWorkoutFragment : Fragment() {
                     mediaUri = "https://ref.test.kolsa.ru/${videoWorkout.link}",
                     context = context
                 )
+                mainViewModel.workoutsLiveData.value?.find { it.id == videoWorkout.id }
+                    ?.let { binding.customControls.setWorkoutData(it) }
                 playPlayer()
             }
         }
