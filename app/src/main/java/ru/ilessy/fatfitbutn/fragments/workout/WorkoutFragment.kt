@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -39,10 +40,24 @@ class WorkoutFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         observeWorkoutsLiveData()
         observeWorkoutType()
+        observeWorkoutFilter()
         binding.workoutsRv.layoutManager = LinearLayoutManager(activity)
         binding.controlLayout.filter.setOnClickListener {
             workoutViewModel.changeWorkoutType()
         }
+        binding.controlLayout.founder.setOnQueryTextListener(object : OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    workoutViewModel.changeWorkoutFilter(workoutFilter = newText)
+                }
+                return true
+            }
+
+        })
         mainViewModel.setIntent(workoutIntent = WorkoutIntent.GetWorkouts)
     }
 
@@ -51,7 +66,8 @@ class WorkoutFragment : Fragment() {
             if (workoutsList != null) {
                 val workoutAdapter = WorkoutAdapter(
                     workoutsList = workoutsList,
-                    workoutType = workoutViewModel.workoutType.value
+                    workoutType = workoutViewModel.workoutType.value,
+                    workoutFilter = workoutViewModel.workoutFilter.value
                 )
                 lifecycleScope.launch {
                     workoutAdapter.workoutState.collect { workoutState ->
@@ -74,7 +90,21 @@ class WorkoutFragment : Fragment() {
     private fun observeWorkoutType() {
         workoutViewModel.workoutType.observe(viewLifecycleOwner) { workoutType ->
             if (binding.workoutsRv.adapter != null) {
-                (binding.workoutsRv.adapter as WorkoutAdapter).filter(workoutType = workoutType)
+                (binding.workoutsRv.adapter as WorkoutAdapter).filter(
+                    workoutType = workoutType,
+                    workoutFilter = workoutViewModel.workoutFilter.value
+                )
+            }
+        }
+    }
+
+    private fun observeWorkoutFilter() {
+        workoutViewModel.workoutFilter.observe(viewLifecycleOwner) { workoutFilter ->
+            if (binding.workoutsRv.adapter != null) {
+                (binding.workoutsRv.adapter as WorkoutAdapter).filter(
+                    workoutType = workoutViewModel.workoutType.value,
+                    workoutFilter = workoutFilter
+                )
             }
         }
     }
