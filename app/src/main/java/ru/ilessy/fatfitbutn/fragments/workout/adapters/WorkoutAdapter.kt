@@ -17,7 +17,8 @@ import ru.ilessy.fatfitbutn.databinding.WorkoutHolderViewBinding
 
 class WorkoutAdapter(
     private val workoutsList: List<Workout>,
-    private var workoutType: WorkoutType? = null
+    private var workoutType: WorkoutType? = null,
+    private var workoutFilter: String? = null
 ) :
     RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder>() {
 
@@ -25,7 +26,9 @@ class WorkoutAdapter(
     val workoutState: SharedFlow<WorkoutState> = _workoutState
 
     private var workoutViewList: List<Workout> = workoutsList.filter { workout ->
-        workoutType == null || workoutType == WorkoutType.UNDEFINED || workout.workoutType == workoutType
+        (workoutType == null || workoutType == WorkoutType.UNDEFINED || workout.workoutType == workoutType) &&
+                (workoutFilter.isNullOrEmpty() ||
+                        workout.title.contains(workoutFilter ?: "", ignoreCase = true))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
@@ -43,15 +46,20 @@ class WorkoutAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun filter(workoutType: WorkoutType?) {
-        this.workoutType = workoutType
-        updateWorkoutViewList(workoutType = workoutType)
-        notifyDataSetChanged()
+    fun filter(workoutType: WorkoutType?, workoutFilter: String?) {
+        if (this.workoutType != workoutType || this.workoutFilter != workoutFilter) {
+            this.workoutType = workoutType
+            this.workoutFilter = workoutFilter
+            updateWorkoutViewList(workoutType = workoutType, workoutFilter = workoutFilter)
+            notifyDataSetChanged()
+        }
     }
 
-    private fun updateWorkoutViewList(workoutType: WorkoutType?) {
+    private fun updateWorkoutViewList(workoutType: WorkoutType?, workoutFilter: String? = null) {
         workoutViewList = workoutsList.filter { workout ->
-            workoutType == null || workoutType == WorkoutType.UNDEFINED || workout.workoutType == workoutType
+            (workoutType == null || workoutType == WorkoutType.UNDEFINED || workout.workoutType == workoutType) &&
+                    (workoutFilter.isNullOrEmpty() ||
+                            workout.title.contains(workoutFilter, ignoreCase = true))
         }
     }
 

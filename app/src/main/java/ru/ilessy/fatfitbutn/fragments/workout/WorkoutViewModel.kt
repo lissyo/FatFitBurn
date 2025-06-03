@@ -10,6 +10,9 @@ class WorkoutViewModel : ViewModel() {
     private val _workoutType: MutableLiveData<WorkoutType> = MutableLiveData()
     val workoutType: LiveData<WorkoutType> = _workoutType
 
+    private val _workoutFilter: MutableLiveData<String> = MutableLiveData()
+    val workoutFilter: LiveData<String> = _workoutFilter
+
     fun changeWorkoutType() {
         when (_workoutType.value) {
             WorkoutType.WORKOUT -> {
@@ -28,6 +31,10 @@ class WorkoutViewModel : ViewModel() {
                 _workoutType.value = WorkoutType.WORKOUT
             }
         }
+    }
+
+    fun changeWorkoutFilter(workoutFilter: String) {
+        _workoutFilter.value = workoutFilter
     }
 
 }
