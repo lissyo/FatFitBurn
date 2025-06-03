@@ -26,6 +26,16 @@ class MainViewModel @Inject constructor(
     private val _videoLiveData: MutableLiveData<VideoWorkout> = MutableLiveData<VideoWorkout>()
     val videoLiveData: LiveData<VideoWorkout> = _videoLiveData
 
+    private var currentVideoWorkout: VideoWorkout? = null
+
+    fun isValidVideoWorkout(videoWorkout: VideoWorkout): Boolean {
+        return currentVideoWorkout != videoWorkout
+    }
+
+    fun updateVideoWorkout(videoWorkout: VideoWorkout) {
+        currentVideoWorkout = videoWorkout
+    }
+
     fun setIntent(workoutIntent: WorkoutIntent) {
         when (workoutIntent) {
             is WorkoutIntent.GetWorkouts -> {
