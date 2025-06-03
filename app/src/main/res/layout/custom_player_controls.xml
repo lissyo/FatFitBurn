@@ -4,6 +4,7 @@
     android:id="@+id/playlist_item_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/alpha_player_controls"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -19,12 +20,16 @@
         <TextView
             android:id="@+id/workout_name"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/workout_description"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
 
     </LinearLayout>
 
@@ -32,9 +37,10 @@
         android:id="@+id/exo_play"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:background="@color/transparent_color"
         android:padding="5dp"
         android:scaleType="fitCenter"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/play_icon"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/linear_controls"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,9 +51,10 @@
         android:id="@+id/exo_pause"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:background="@color/transparent_color"
         android:padding="5dp"
         android:scaleType="fitCenter"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/pause_icon"
         app:layout_constraintBottom_toTopOf="@id/linear_controls"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,9 +74,10 @@
             android:id="@+id/workout_quality_btn"
             android:layout_width="42dp"
             android:layout_height="42dp"
+            android:background="@color/transparent_color"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/quality_icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -77,9 +85,10 @@
             android:id="@+id/workout_speed_btn"
             android:layout_width="42dp"
             android:layout_height="42dp"
+            android:background="@color/transparent_color"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/speed_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
